@@ -65,6 +65,8 @@ class TA extends Thread
 	private int holeDugNum=0;     // number of hole dug
 	private final int MAX=5;   // can only get 5 holes ahead
 	// add semaphores - the professor lets the TA manage things.
+	private final Semaphore available = new Semaphore(3, true);
+
 	
 
 	public int getMAX() { return(MAX); }
@@ -80,6 +82,7 @@ class TA extends Thread
 	
 	public void run()
 	{
+
 		while(true)
 		{
 		     System.out.println("TA: Got the shovel");
