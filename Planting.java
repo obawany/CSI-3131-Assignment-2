@@ -54,36 +54,65 @@ class Student extends Thread
 		// if (ta.permmissionForStudent.tryAcquire() == true){
 		// try{
 		// 	ta.permmissionForStudent.acquire();
+		if(ta.max_hole.availablePermits()==0)
+				{System.out.println("Student: Must wait for TA "+ta.getMAX()+" holes ahead");
+				try{
+					ta.max_hole.acquire(); }
+				catch (InterruptedException e15){
+					break;
+				}
+			}
+		else{
+			try {
+				ta.max_hole.acquire();
+			}
+			catch(InterruptedException e16){
+				break;
+			}
 
-			try{
-				if(ta.max_hole.availablePermits()==0)
-					System.out.println("Student: Must wait for TA "+ta.getMAX()+" holes ahead");
-				ta.max_hole.acquire(); 
+		}
+		//now for Shovel share
+		try {
+			ta.shovel_share.acquire();
+		}
+		catch(InterruptedException e17){
+			break;
+		}
+	    System.out.println("Student: Got the shovel");
+	    try {sleep((int) (100*Math.random()));} catch (Exception e) { break;} // Time to fill hole
+	                     ta.incrHoleDug();  // hole filled - increment the number	
+			     System.out.println("Student: Hole "+ta.getHoleDug()+" Dug");
+
+		ta.empty_hole.release();
+		ta.shovel_share.release();
+		System.out.println("Student: Letting go of the shovel");
+
+
 				// if (ta.max_hole.availablePermits() == 0){
 			     	// ta.shovel_share.release(1);
 			 		// }	
 			     // Can dig a hole - lets get the shovel
 			    //try acqure uniterruptible if just try acquire doesnt work 
 
-			  	try{
-				     ta.shovel_share.acquireUninterruptibly();
+			//   	try{
+			// 	     ta.shovel_share.acquireUninterruptibly();
 
-				     System.out.println("Student: Got the shovel");
-			             try {sleep((int) (100*Math.random()));} catch (Exception e) { break;} // Time to fill hole
-	                     ta.incrHoleDug();  // hole filled - increment the number	
-			     System.out.println("Student: Hole "+ta.getHoleDug()+" Dug");
-			     System.out.println("Student: Letting go of the shovel");
+			// 	     System.out.println("Student: Got the shovel");
+			//              try {sleep((int) (100*Math.random()));} catch (Exception e) { break;} // Time to fill hole
+	  //                    ta.incrHoleDug();  // hole filled - increment the number	
+			//      System.out.println("Student: Hole "+ta.getHoleDug()+" Dug");
+			//      System.out.println("Student: Letting go of the shovel");
 
-			 }
-			 finally{
-			     ta.shovel_share.release();
-			 }
-			}
-			catch(InterruptedException e9)
-				{e9.printStackTrace();}
-			finally{
-				     ta.empty_hole.release();
- 					}
+			//  }
+			//  finally{
+			//      ta.shovel_share.release();
+			//  }
+			// }
+			// catch(InterruptedException e9)
+			// 	{e9.printStackTrace();}
+			// finally{
+			// 	     ta.empty_hole.release();
+ 		// 			}
 			if(isInterrupted()) break;
 			 // }
 			 // finally {
@@ -190,32 +219,43 @@ class TA extends Thread
 		{	
 			try{
 				unfilled_hole.acquire();
-				try{
-					shovel_share.acquireUninterruptibly();
-				 // if (ta_semaphore.tryacquire() == 1){
-				 	System.out.println("TA: Got the shovel");
-		            // ta_semaphore.acquire();
-		            // shovel_share.tryacquire();
+				shovel_share.acquire();
+
+			}
+			catch(InterruptedException e18){
+				break;
+			}
+		 	System.out.println("TA: Got the shovel");
+
+				// try{
+				// 	shovel_share.acquireUninterruptibly();
+				//  // if (ta_semaphore.tryacquire() == 1){
+				//  	System.out.println("TA: Got the shovel");
+		  //           // ta_semaphore.acquire();
+		  //           // shovel_share.tryacquire();
 
 
 		             try {sleep((int) (100*Math.random()));} catch (Exception e) { break;} // Time to fill hole
 	                     holeFilledNum++;  // hole filled - increment the number	
 					     System.out.println("TA: The hole "+holeFilledNum+" has been filled");
+					     // System.out.println("TA: Letting go of the shovel");
+
+					 // }
+					     //unfilled_hole.release();
+					 // finally{
+					     max_hole.release();
+					     shovel_share.release();
 					     System.out.println("TA: Letting go of the shovel");
 
-					 }
-					     //unfilled_hole.release();
-					 finally{
-					     shovel_share.release();
-					 }
+					 
 					
-				}
+				
 
-					 catch(InterruptedException e2)
-						{e2.printStackTrace();}
-					 finally{
-					     max_hole.release();
-					 }
+					 // catch(InterruptedException e2)
+						// {e2.printStackTrace();}
+					 // finally{
+					 //     max_hole.release();
+					 // }
 			
 			if(isInterrupted()) break;
 		//      {
@@ -225,8 +265,7 @@ class TA extends Thread
 		//      finally{
 		//      	break;
 		//   }
-		// }
-	}
+		}
 		System.out.println("TA is done");
 
 	}
@@ -260,19 +299,23 @@ class Professor extends Thread
 				// TA.empty_hole.acquire();
 				ta.empty_hole.acquire();
 		  //    	TA.incrHolePlanted();
-
+				}
+			catch(InterruptedException e19){
+				break;
+			}
 	            try {sleep((int) (50*Math.random()));
 	            	// ta.empty_hole.acquire();
 	            	} catch (Exception e) { break;} // Time to plant
                      ta.incrHolePlanted();  // the seed is planted - increment the number	
 		    		 System.out.println("Professor: All be advised that I have completed planting hole "+
 				        ta.getHolePlanted());
-				}
-			catch(InterruptedException e3)
-				{e3.printStackTrace();}
-			finally{
-			  ta.unfilled_hole.release();
-			}
+				
+			// catch(InterruptedException e3)
+			// 	{e3.printStackTrace();}
+			// finally{
+			//   ta.unfilled_hole.release();
+			// }
+		    	ta.unfilled_hole.release();
 		}	
 		// ta.permmissionForStudent.acquireUninterruptibly();
 		System.out.println("Professeur: We have worked enough for today");
