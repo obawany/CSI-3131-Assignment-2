@@ -42,10 +42,10 @@ class Student extends Thread
 
 	public void run()
 	{
-		try{
-		ta.max_hole.acquire();}
-		catch(InterruptedException e9)
-		{e9.printStackTrace();}
+		// try{
+		// ta.max_hole.acquire();}
+		// catch(InterruptedException e9)
+		// {e9.printStackTrace();}
 		
 
 		while(true)
@@ -169,7 +169,7 @@ class TA extends Thread
 
 		empty_hole 		= new Semaphore(0,true);
 		unfilled_hole	= new Semaphore(0, true);
-		max_hole		= new Semaphore(5, true);
+		max_hole		= new Semaphore(MAX, true);
 		shovel_share	= new Semaphore(1, true);
 
 		//add a permmission from prof to keep working 
@@ -273,9 +273,9 @@ class Professor extends Thread
 			finally{
 			  ta.unfilled_hole.release();
 			}
+		}	
 		// ta.permmissionForStudent.acquireUninterruptibly();
 		System.out.println("Professeur: We have worked enough for today");
 	}
-}
 }
 
