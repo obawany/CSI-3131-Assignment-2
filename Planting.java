@@ -42,22 +42,17 @@ class Student extends Thread
 	public void run()
 	{
 
-		try{
-		ta.max_hole.acquire(); }
-		catch(InterruptedException e1)
-			{e1.printStackTrace();
-			System.out.println("Student: Must wait for TA "+ta.getMAX()+" holes ahead");
-			}
-
 		while(true)
 		{
-			
 
+		try{
+			ta.max_hole.acquire(); 
 			// if (ta.max_hole.availablePermits() == 0){
 		     	// ta.shovel_share.release(1);
 		 		// }	
 		     // Can dig a hole - lets get the shovel
-		    //try acqure uniterruptible if just try acquire doesnt work 	
+		    //try acqure uniterruptible if just try acquire doesnt work 
+		    try{
 		     ta.shovel_share.acquireUninterruptibly(1);
 
 		     System.out.println("Student: Got the shovel");
@@ -67,9 +62,24 @@ class Student extends Thread
 		     System.out.println("Student: Letting go of the shovel");
 		     ta.empty_hole.release();
 		     ta.shovel_share.release();
-
-		     
+		 
+		 }
+		 finally {
+		 	ta.shovel_share.release();
+		 }
+		}
+		
+		catch(InterruptedException e1)
+			{
+			System.out.println("Student: Must wait for TA "+ta.getMAX()+" holes ahead\n");
+			//e1.printStackTrace();
+			break;
+			}
+		
+		finally {
+			 ta.unfilled_hole.release();
 		     if(isInterrupted()) break;
+		}
 		
 	
 		}
